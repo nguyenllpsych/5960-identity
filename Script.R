@@ -12,6 +12,7 @@
 library(tidyverse)
 library(codebook)
 library(apaTables)
+library(profileR)
 
 # > Data ----
 # >> simulated data for pre-reg ----
@@ -562,3 +563,72 @@ summary(modH2c)
 
 modH2d <- lm(k10_distress ~ dids_explorebreadth + dids_explorerum)
 summary(modH2d)
+
+# > (H3) - Identity status MDS ----
+# >> Dimensions ----
+## standardize data
+identity <- as.data.frame(scale(data[35:39]))
+
+
+## correlation matrix
+ridentity <- as.data.frame(cor(identity))
+
+## transpose data to have variable on rows, subjects on columns
+identity.t <- as.data.frame(t(identity))
+
+#euclidean distance 
+dist <- dist(identity.t)
+
+#mds analysis
+mds <- cmdscale(dist, eig = TRUE, k = 4)
+
+#plot of eigenvalues
+#elbow at 4 -> this value might change in actual data
+eig <- mds$eig
+plot(eig, ylab = "eigenvalue")
+
+#plot of dimension 1 and 2
+plot(x = -mds$points[,1], 
+     y = -mds$points[,2],
+     xlab = "Coordinate 1",
+     ylab = "Coordinate 2",
+     main = "Metric MDS")
+text(x = -mds$points[,1], 
+     y = -mds$points[,2],
+     labels=rownames(identity.t),
+     cex=0.7, font=2)
+
+#plot of dimension 2 and 3
+plot(x = -mds$points[,2], 
+     y = -mds$points[,3],
+     xlab = "Coordinate 2",
+     ylab = "Coordinate 3",
+     main = "Metric MDS")
+text(x = -mds$points[,2], 
+     y = -mds$points[,3],
+     labels=rownames(identity.t),
+     cex=0.7, font=2)
+
+#plot of dimension 3 and 4
+plot(x = -mds$points[,3], 
+     y = -mds$points[,4],
+     xlab = "Coordinate 3",
+     ylab = "Coordinate 4",
+     main = "Metric MDS")
+text(x = -mds$points[,3], 
+     y = -mds$points[,4],
+     labels=rownames(identity.t),
+     cex=0.7, font=2)
+
+# >> Profile analysis ----
+#pams function, using 4 dimensions as obtained through screeplot 
+#pams dimensional configurations are normalized
+#divided by number of objects
+pams <- pams(data = identity, dim = 4)
+pams.weight <- as.data.frame(pams$weights.matrix)
+
+#example of the first 6 participants
+head(pams.weight)
+
+#summary of R-squared for all participants
+summary(pams.weight$R.sq)
