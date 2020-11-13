@@ -512,9 +512,6 @@ var_label(data$k10_distress) <- "Psychological Distress 10 K10 items aggregated 
 
 rm(k10_distress)
 
-
-
-
 # >> clean-up ----
 data <- data %>% 
   select(ID, age, ethnic_cat, liveus, gender_f, gender_o, sexualo_o, schooling, socialclass, 
@@ -549,7 +546,7 @@ summary(modH1c)
 modH1d <- lm(k10_distress ~ dids_exploredepth + dids_explorerum)
 summary(modH1d)
 
-# > (H2) - Exploreation in breadth ----
+# > (H2) - Exploration in breadth ----
 # >> Self-esteem
 modH2a <- lm(rse_selfesteem ~ dids_explorebreadth)
 summary(modH2a)
@@ -568,7 +565,6 @@ summary(modH2d)
 # >> Dimensions ----
 ## standardize data
 identity <- as.data.frame(scale(data[35:39]))
-
 
 ## correlation matrix
 ridentity <- as.data.frame(cor(identity))
@@ -632,3 +628,96 @@ head(pams.weight)
 
 #summary of R-squared for all participants
 summary(pams.weight$R.sq)
+
+#merge person-profile match indices to data
+pams.weight <- as.data.frame(pams.weight)
+pams.weight$ID <- c(1:1260)
+
+data <- merge(data, pams.weight)
+
+# > (H4) - Correlation with external variables ----
+# >> Personality traits ----
+# >>> identity processes ----
+data %>% select(dids_commitmaking:dids_explorerum,
+                bfas_agreeableness, bfas_compassion, bfas_politeness) %>% 
+  apa.cor.table()
+  
+data %>% select(dids_commitmaking:dids_explorerum,
+                bfas_conscientiousness, bfas_industriousness, bfas_orderliness) %>% 
+  apa.cor.table()
+
+data %>% select(dids_commitmaking:dids_explorerum,
+                bfas_extraversion, bfas_assertiveness, bfas_enthusiasm) %>% 
+  apa.cor.table()
+
+data %>% select(dids_commitmaking:dids_explorerum,
+                bfas_neuroticism, bfas_volatility, bfas_withdrawal) %>% 
+  apa.cor.table()
+  
+data %>% select(dids_commitmaking:dids_explorerum,
+                bfas_opennessdomain, bfas_opennessaspect, bfas_intellect) %>% 
+  apa.cor.table()  
+  
+# >>> identity MDS profiles ----
+data %>% select(weight1:weight4,
+                bfas_opennessdomain, bfas_opennessaspect, bfas_intellect) %>% 
+  apa.cor.table()  
+  
+data %>% select(weight1:weight4,
+                bfas_conscientiousness, bfas_industriousness, bfas_orderliness) %>% 
+  apa.cor.table()  
+  
+data %>% select(weight1:weight4,
+                bfas_extraversion, bfas_assertiveness, bfas_enthusiasm) %>% 
+  apa.cor.table()  
+  
+data %>% select(weight1:weight4,
+                bfas_neuroticism, bfas_volatility, bfas_withdrawal) %>% 
+  apa.cor.table()  
+  
+data %>% select(weight1:weight4,
+                bfas_opennessdomain, bfas_opennessaspect, bfas_intellect) %>% 
+  apa.cor.table()   
+  
+# >> EPSI identity stages ----
+# >>> identity processes ----
+data %>% select(dids_commitmaking:dids_explorerum,
+                epsi_coherence, epsi_confusion) %>% 
+  apa.cor.table()
+  
+data %>% select(dids_commitmaking:dids_explorerum,
+                epsi_coherence, epsi_confusion) %>% 
+  apa.cor.table()
+
+data %>% select(dids_commitmaking:dids_explorerum,
+                epsi_coherence, epsi_confusion) %>% 
+  apa.cor.table()
+
+data %>% select(dids_commitmaking:dids_explorerum,
+                epsi_coherence, epsi_confusion) %>% 
+  apa.cor.table()
+  
+data %>% select(dids_commitmaking:dids_explorerum,
+                epsi_coherence, epsi_confusion) %>% 
+  apa.cor.table()  
+  
+# >>> identity MDS profiles ----
+data %>% select(weight1:weight4,
+                epsi_coherence, epsi_confusion) %>% 
+  apa.cor.table()
+  
+data %>% select(weight1:weight4,
+                epsi_coherence, epsi_confusion) %>% 
+  apa.cor.table()
+
+data %>% select(weight1:weight4,
+                epsi_coherence, epsi_confusion) %>% 
+  apa.cor.table()
+
+data %>% select(weight1:weight4,
+                epsi_coherence, epsi_confusion) %>% 
+  apa.cor.table()
+  
+data %>% select(weight1:weight4,
+                epsi_coherence, epsi_confusion) %>% 
+  apa.cor.table()
