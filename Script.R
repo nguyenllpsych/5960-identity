@@ -11,25 +11,24 @@
 # > Libraries ----
 library(tidyverse)
 library(codebook)
+library(apaTables)
 
 # > Data ----
-# >> simulated data and cleaning for pre-reg ----
+# >> simulated data for pre-reg ----
 data <- read.csv(file = './Simulation/sim.csv') 
 dict <- read.csv(file = "./Data/SCORE Dictionary PSY 5960.csv")
 
-#delete some random variables
-data <- data %>% 
-  select(-'NA.', - 'NA..1')
-
 #rename to delete '_sim'
-names <- colnames(data[13:167])
+names <- colnames(data[13:169])
 newname <- sub(names, pattern = "_sim", replacement = "")
-names(data)[13:167] <- newname
+names(data)[13:169] <- newname
 names(data)[names(data) == "dids1"] <- "dids_1" #wrong name format
 
 rm(names, newname)
 
-# >>> basic cleaning ----
+# CLEANING ====
+# > simulated data for pre-reg ----
+# >> basic cleaning ----
 ## Recode no/yes -> 1/2 
 data$liveus <- as.factor(data$liveus)
 data$usborn <- as.factor(data$usborn)
@@ -274,8 +273,8 @@ val_labels(data$gender_f) <- c("female" = 1,
 
 var_label(data$gender_f) <- "Gender Coded as Factor"
 
-# >>> scale scoring ----
-# >>>> Rosenberg Self-Esteem Scale (Rosenberg, 1965)----
+# >> scale scoring ----
+# >>> Rosenberg Self-Esteem Scale (Rosenberg, 1965)----
 ## create list of items for each variable 
 rse_selfesteem <- dict %>% 
   filter (scale == "RSE Self-Esteem") %>% 
@@ -305,7 +304,7 @@ var_label(data$rse_negative) <- "Negative Self-Esteem 5 RSE items aggregated by 
 
 rm(rse_negative, rse_positive, rse_selfesteem)
 
-# >>>> Eriksonian Psychosocial Stage Inventory (Rosenthal et al., 1981) ----
+# >>> Eriksonian Psychosocial Stage Inventory (Rosenthal et al., 1981) ----
 ## create list of items for each variable 
 epsi_confusion <- dict %>% 
   filter (scale == "EPSI Confusion") %>% 
@@ -328,7 +327,7 @@ var_label(data$epsi_coherence) <- "Identity Coherence 6 EPSI items aggregated by
 
 rm(epsi_confusion, epsi_coherence)
 
-# >>>> Big Five Aspect Scale (DeYoung et al., 2007) ----
+# >>> Big Five Aspect Scale (DeYoung et al., 2007) ----
 ## create list of items for each variable 
 bfas_agreeableness <- dict %>% 
   filter (scale == "BFAS Agreeableness") %>% 
@@ -452,7 +451,7 @@ rm(list = c("bfas_agreeableness", "bfas_assertiveness", "bfas_compassion",
             "bfas_opennessaspect", "bfas_opennessdomain", "bfas_orderliness",
             "bfas_politeness", "bfas_volatility", "bfas_withdrawal"))
 
-# >>>> Dimensions of Identity Development Scale (Luyckx et al., 2008) ----
+# >>> Dimensions of Identity Development Scale (Luyckx et al., 2008) ----
 ## create list of items for each variable 
 dids_commitmaking <- dict %>% 
   filter (scale == "DIDS Commitment Making") %>% 
@@ -496,7 +495,7 @@ var_label(data$dids_explorerum) <- "Ruminative Exploration 5 DIDS items aggregat
 
 rm(dids_commitmaking, dids_commitid, dids_explorebreadth, dids_exploredepth, dids_explorerum)
 
-# >>>> Kessler Psychological Distress Scale (Kessler et al., 2002) ----
+# >>> Kessler Psychological Distress Scale (Kessler et al., 2002) ----
 ## create list of items for each variable 
 k10_distress <- dict %>% 
   filter (scale == "K10 Psychological Distress") %>% 
@@ -514,3 +513,52 @@ rm(k10_distress)
 
 
 
+
+# >> clean-up ----
+data <- data %>% 
+  select(ID, age, ethnic_cat, liveus, gender_f, gender_o, sexualo_o, schooling, socialclass, 
+         usborn, usbornp, politics, religion, covidstress_1,
+         rse_selfesteem:k10_distress)
+
+attach(data)
+# ANALYSIS ====
+
+# > Bivariate correlations ----
+data %>% select(dids_commitmaking:dids_explorerum) %>% 
+  apa.cor.table()
+
+data %>% select(dids_explorebreadth, k10_distress, rse_selfesteem, rse_positive, rse_negative) %>% 
+  apa.cor.table()
+
+data %>% select(dids_exploredepth, k10_distress, rse_selfesteem, rse_positive, rse_negative) %>% 
+  apa.cor.table()
+
+# > (H1) - Exploration in depth ----
+# >> Self-esteem
+modH1a <- lm(rse_selfesteem ~ dids_exploredepth)
+summary(modH1a)
+
+modH1b <- lm(rse_selfesteem ~ dids_exploredepth + dids_explorerum)
+summary(modH1b)
+
+# >> Distress
+modH1c <- lm(k10_distress ~ dids_exploredepth)
+summary(modH1c)
+
+modH1d <- lm(k10_distress ~ dids_exploredepth + dids_explorerum)
+summary(modH1d)
+
+# > (H2) - Exploreation in breadth ----
+# >> Self-esteem
+modH2a <- lm(rse_selfesteem ~ dids_explorebreadth)
+summary(modH2a)
+
+modH2b <- lm(rse_selfesteem ~ dids_explorebreadth + dids_explorerum)
+summary(modH2b)
+
+# >> Distress
+modH2c <- lm(k10_distress ~ dids_explorebreadth)
+summary(modH2c)
+
+modH2d <- lm(k10_distress ~ dids_explorebreadth + dids_explorerum)
+summary(modH2d)
