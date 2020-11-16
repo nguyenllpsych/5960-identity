@@ -2,9 +2,9 @@
 ##    PSY 5960: Identity - Personality - Wellbeing   ##
 ##                Linh Nguyen                        ##
 ##            Created: 13-Nov-2020                   ##
-##         Last updated: 13-Nov-2020                 ##
+##         Last updated: 16-Nov-2020                 ##
 ##                                                   ##
-## UPDATES: create script for sim data for prereg    ##
+## UPDATES: added renv package version control       ##
 #######################################################
 
 # META ====
@@ -13,6 +13,7 @@ library(tidyverse)
 library(codebook)
 library(apaTables)
 library(profileR)
+renv::restore() #ensuring packages are at the same version
 
 # > Data ----
 # >> simulated data for pre-reg ----
