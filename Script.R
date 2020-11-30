@@ -2,9 +2,9 @@
 ##    PSY 5960: Identity - Personality - Wellbeing   ##
 ##                Linh Nguyen                        ##
 ##            Created: 13-Nov-2020                   ##
-##         Last updated: 16-Nov-2020                 ##
+##         Last updated: 29-Nov-2020                 ##
 ##                                                   ##
-## UPDATES: added renv package version control       ##
+## UPDATES: dplyr::select and normalized mds scores  ##
 #######################################################
 
 # META ====
@@ -13,6 +13,7 @@ library(tidyverse)
 library(codebook)
 library(apaTables)
 library(profileR)
+library(pwr)
 renv::restore() #ensuring packages are at the same version
 
 # > Data ----
@@ -51,7 +52,7 @@ rm(names)
 
 ## Variable labels
 var_label(data) <- dict %>% 
-  select(variable, label) %>% 
+  dplyr::select(variable, label) %>% 
   dict_to_list()
 data$age <- as.numeric(data$age)
 data[135,]$age <- 22 #said 0.22 but should be 22
@@ -290,13 +291,13 @@ rse_negative <- dict %>%
 
 ## create aggregated variables 
 data$rse_selfesteem <- data %>% 
-  select(c(rse_selfesteem)) %>% 
+  dplyr::select(c(rse_selfesteem)) %>% 
   aggregate_and_document_scale()
 data$rse_positive <- data %>% 
-  select(c(rse_positive)) %>% 
+  dplyr::select(c(rse_positive)) %>% 
   aggregate_and_document_scale()
 data$rse_negative <- data %>% 
-  select(c(rse_negative)) %>% 
+  dplyr::select(c(rse_negative)) %>% 
   aggregate_and_document_scale()
 
 ## add variable label for aggregated variables 
@@ -317,10 +318,10 @@ epsi_coherence <- dict %>%
 
 ## create aggregated variables 
 data$epsi_confusion <- data %>% 
-  select(c(epsi_confusion)) %>% 
+  dplyr::select(c(epsi_confusion)) %>% 
   aggregate_and_document_scale()
 data$epsi_coherence <- data %>% 
-  select(c(epsi_coherence)) %>% 
+  dplyr::select(c(epsi_coherence)) %>% 
   aggregate_and_document_scale()
 
 ## add variable label for aggregated variables
@@ -386,49 +387,49 @@ bfas_withdrawal <- bfas_withdrawal[c(2,1,3:10)]
 
 ## create aggregated variables 
 data$bfas_agreeableness <- data %>% 
-  select(c(bfas_agreeableness)) %>% 
+  dplyr::select(c(bfas_agreeableness)) %>% 
   aggregate_and_document_scale()
 data$bfas_conscientiousness <- data %>% 
-  select(c(bfas_conscientiousness)) %>% 
+  dplyr::select(c(bfas_conscientiousness)) %>% 
   aggregate_and_document_scale()
 data$bfas_extraversion <- data %>% 
-  select(c(bfas_extraversion)) %>% 
+  dplyr::select(c(bfas_extraversion)) %>% 
   aggregate_and_document_scale()
 data$bfas_neuroticism <- data %>% 
-  select(c(bfas_neuroticism)) %>% 
+  dplyr::select(c(bfas_neuroticism)) %>% 
   aggregate_and_document_scale()
 data$bfas_opennessdomain <- data %>% 
-  select(c(bfas_opennessdomain)) %>% 
+  dplyr::select(c(bfas_opennessdomain)) %>% 
   aggregate_and_document_scale()
 data$bfas_assertiveness <- data %>% 
-  select(c(bfas_assertiveness)) %>% 
+  dplyr::select(c(bfas_assertiveness)) %>% 
   aggregate_and_document_scale()
 data$bfas_compassion <- data %>% 
-  select(c(bfas_compassion)) %>% 
+  dplyr::select(c(bfas_compassion)) %>% 
   aggregate_and_document_scale()
 data$bfas_enthusiasm <- data %>% 
-  select(c(bfas_enthusiasm)) %>% 
+  dplyr::select(c(bfas_enthusiasm)) %>% 
   aggregate_and_document_scale()
 data$bfas_industriousness <- data %>% 
-  select(c(bfas_industriousness)) %>% 
+  dplyr::select(c(bfas_industriousness)) %>% 
   aggregate_and_document_scale()
 data$bfas_intellect <- data %>% 
-  select(c(bfas_intellect)) %>% 
+  dplyr::select(c(bfas_intellect)) %>% 
   aggregate_and_document_scale()
 data$bfas_opennessaspect <- data %>% 
-  select(c(bfas_opennessaspect)) %>% 
+  dplyr::select(c(bfas_opennessaspect)) %>% 
   aggregate_and_document_scale()
 data$bfas_orderliness <- data %>% 
-  select(c(bfas_orderliness)) %>% 
+  dplyr::select(c(bfas_orderliness)) %>% 
   aggregate_and_document_scale()
 data$bfas_politeness <- data %>% 
-  select(c(bfas_politeness)) %>% 
+  dplyr::select(c(bfas_politeness)) %>% 
   aggregate_and_document_scale()
 data$bfas_volatility <- data %>% 
-  select(c(bfas_volatility)) %>% 
+  dplyr::select(c(bfas_volatility)) %>% 
   aggregate_and_document_scale()
 data$bfas_withdrawal <- data %>% 
-  select(c(bfas_withdrawal)) %>% 
+  dplyr::select(c(bfas_withdrawal)) %>% 
   aggregate_and_document_scale()
 
 ## add variable label for aggregated variables 
@@ -473,19 +474,19 @@ dids_explorerum <- dict %>%
 
 ## create aggregated variables 
 data$dids_commitmaking <- data %>% 
-  select(c(dids_commitmaking)) %>% 
+  dplyr::select(c(dids_commitmaking)) %>% 
   aggregate_and_document_scale()
 data$dids_commitid <- data %>% 
-  select(c(dids_commitid)) %>% 
+  dplyr::select(c(dids_commitid)) %>% 
   aggregate_and_document_scale()
 data$dids_explorebreadth <- data %>% 
-  select(c(dids_explorebreadth)) %>% 
+  dplyr::select(c(dids_explorebreadth)) %>% 
   aggregate_and_document_scale()
 data$dids_exploredepth <- data %>% 
-  select(c(dids_exploredepth)) %>% 
+  dplyr::select(c(dids_exploredepth)) %>% 
   aggregate_and_document_scale()
 data$dids_explorerum <- data %>% 
-  select(c(dids_explorerum)) %>% 
+  dplyr::select(c(dids_explorerum)) %>% 
   aggregate_and_document_scale()
 
 ## add variable label for aggregated variables 
@@ -505,7 +506,7 @@ k10_distress <- dict %>%
 
 ## create aggregated variables 
 data$k10_distress <- data %>% 
-  select(c(k10_distress)) %>% 
+  dplyr::select(c(k10_distress)) %>% 
   aggregate_and_document_scale()
 
 ## add variable label for aggregated variables 
@@ -515,12 +516,17 @@ rm(k10_distress)
 
 # >> clean-up ----
 data <- data %>% 
-  select(ID, age, ethnic_cat, liveus, gender_f, gender_o, sexualo_o, schooling, socialclass, 
+  dplyr::select(ID, age, ethnic_cat, liveus, gender_f, gender_o, sexualo_o, schooling, socialclass, 
          usborn, usbornp, politics, religion, covidstress_1,
          rse_selfesteem:k10_distress)
 
 attach(data)
 # ANALYSIS ====
+
+# > Power ----
+pwr.r.test(n = 1260, sig.level = 0.05, power = 0.80)
+pwr.r.test(n = 1260, sig.level = 0.05, power = 0.99)
+pwr.r.test(n = 1260, r = .2, sig.level = 0.05)
 
 # > Bivariate correlations ----
 data %>% select(dids_commitmaking:dids_explorerum) %>% 
@@ -616,6 +622,11 @@ text(x = -mds$points[,3],
      y = -mds$points[,4],
      labels=rownames(identity.t),
      cex=0.7, font=2)
+
+#normalize dimension weights and flip sign(change depending on number of dimensions)
+score.mds <- as.data.frame(-mds$points[,1:4]/5) %>% round(digits = 3)
+names(score.mds) <- paste0("Dimension ", c(1:4))
+score.mds
 
 # >> Profile analysis ----
 #pams function, using 4 dimensions as obtained through screeplot 
