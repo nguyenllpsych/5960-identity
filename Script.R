@@ -2,9 +2,16 @@
 ##    PSY 5960: Identity - Personality - Wellbeing   ##
 ##                Linh Nguyen                        ##
 ##            Created: 13-Nov-2020                   ##
-##         Last updated: 29-Nov-2020                 ##
+##         Last updated: 04-Dec-2020                 ##
 ##                                                   ##
-## UPDATES: dplyr::select and normalized mds scores  ##
+## UPDATES: analyses on full data                    ##
+##                                                   ##
+## FILES NEEDED IN WORKING DIRECTORY:                ##
+##   (1) SCORE Data PSY 5960.csv                     ##
+##   (2) SCORE Dictionary PSY 5960.csv               ##
+##   (3) renv.lock                                   ##
+##                                                   ##
+## TO NAVIGATE: Edit - Folding - Collapse All        ##
 #######################################################
 
 # META ====
@@ -14,24 +21,17 @@ library(codebook)
 library(apaTables)
 library(profileR)
 library(pwr)
-renv::restore() #ensuring packages are at the same version
+library(renv)
+renv::restore() #ensuring packages are at the same version.
+#if there's an error in running renv::restore(), just don't run this line and let me know
 
 # > Data ----
 # >> simulated data for pre-reg ----
-data <- read.csv(file = './Simulation/sim.csv') 
-dict <- read.csv(file = "./Data/SCORE Dictionary PSY 5960.csv")
-
-#rename to delete '_sim'
-names <- colnames(data[13:169])
-newname <- sub(names, pattern = "_sim", replacement = "")
-names(data)[13:169] <- newname
-names(data)[names(data) == "dids1"] <- "dids_1" #wrong name format
-
-rm(names, newname)
+data <- read.csv(file = "./Data/SCORE Data PSY 5960.csv") #remove ./Data/ if file in current directory
+dict <- read.csv(file = "./Data/SCORE Dictionary PSY 5960.csv") #remove ./Data/ if file in current directory
 
 # CLEANING ====
-# > simulated data for pre-reg ----
-# >> basic cleaning ----
+# > basic cleaning ----
 ## Recode no/yes -> 1/2 
 data$liveus <- as.factor(data$liveus)
 data$usborn <- as.factor(data$usborn)
@@ -39,7 +39,6 @@ data$liveus <- plyr::revalue(data$liveus, c("1" = "0","2" = "1"))
 data$usborn <- plyr::revalue(data$usborn, c("1" = "0","2" = "1"))
 data$liveus <- as.numeric(as.character(data$liveus))
 data$usborn <- as.numeric(as.character(data$usborn))
-
 
 ## Make sure variable types are correct 
 names <- dict %>% 
@@ -276,8 +275,8 @@ val_labels(data$gender_f) <- c("female" = 1,
 
 var_label(data$gender_f) <- "Gender Coded as Factor"
 
-# >> scale scoring ----
-# >>> Rosenberg Self-Esteem Scale (Rosenberg, 1965)----
+# > scale scoring ----
+# >> Rosenberg Self-Esteem Scale (Rosenberg, 1965) ----
 ## create list of items for each variable 
 rse_selfesteem <- dict %>% 
   filter (scale == "RSE Self-Esteem") %>% 
@@ -291,13 +290,13 @@ rse_negative <- dict %>%
 
 ## create aggregated variables 
 data$rse_selfesteem <- data %>% 
-  dplyr::select(c(rse_selfesteem)) %>% 
+  dplyr::select(all_of(rse_selfesteem)) %>% 
   aggregate_and_document_scale()
 data$rse_positive <- data %>% 
-  dplyr::select(c(rse_positive)) %>% 
+  dplyr::select(all_of(rse_positive)) %>% 
   aggregate_and_document_scale()
 data$rse_negative <- data %>% 
-  dplyr::select(c(rse_negative)) %>% 
+  dplyr::select(all_of(rse_negative)) %>% 
   aggregate_and_document_scale()
 
 ## add variable label for aggregated variables 
@@ -307,7 +306,7 @@ var_label(data$rse_negative) <- "Negative Self-Esteem 5 RSE items aggregated by 
 
 rm(rse_negative, rse_positive, rse_selfesteem)
 
-# >>> Eriksonian Psychosocial Stage Inventory (Rosenthal et al., 1981) ----
+# >> Eriksonian Psychosocial Stage Inventory (Rosenthal et al., 1981) ----
 ## create list of items for each variable 
 epsi_confusion <- dict %>% 
   filter (scale == "EPSI Confusion") %>% 
@@ -318,10 +317,10 @@ epsi_coherence <- dict %>%
 
 ## create aggregated variables 
 data$epsi_confusion <- data %>% 
-  dplyr::select(c(epsi_confusion)) %>% 
+  dplyr::select(all_of(epsi_confusion)) %>% 
   aggregate_and_document_scale()
 data$epsi_coherence <- data %>% 
-  dplyr::select(c(epsi_coherence)) %>% 
+  dplyr::select(all_of(epsi_coherence)) %>% 
   aggregate_and_document_scale()
 
 ## add variable label for aggregated variables
@@ -330,7 +329,7 @@ var_label(data$epsi_coherence) <- "Identity Coherence 6 EPSI items aggregated by
 
 rm(epsi_confusion, epsi_coherence)
 
-# >>> Big Five Aspect Scale (DeYoung et al., 2007) ----
+# >> Big Five Aspect Scale (DeYoung et al., 2007) ----
 ## create list of items for each variable 
 bfas_agreeableness <- dict %>% 
   filter (scale == "BFAS Agreeableness") %>% 
@@ -387,49 +386,49 @@ bfas_withdrawal <- bfas_withdrawal[c(2,1,3:10)]
 
 ## create aggregated variables 
 data$bfas_agreeableness <- data %>% 
-  dplyr::select(c(bfas_agreeableness)) %>% 
+  dplyr::select(all_of(bfas_agreeableness)) %>% 
   aggregate_and_document_scale()
 data$bfas_conscientiousness <- data %>% 
-  dplyr::select(c(bfas_conscientiousness)) %>% 
+  dplyr::select(all_of(bfas_conscientiousness)) %>% 
   aggregate_and_document_scale()
 data$bfas_extraversion <- data %>% 
-  dplyr::select(c(bfas_extraversion)) %>% 
+  dplyr::select(all_of(bfas_extraversion)) %>% 
   aggregate_and_document_scale()
 data$bfas_neuroticism <- data %>% 
-  dplyr::select(c(bfas_neuroticism)) %>% 
+  dplyr::select(all_of(bfas_neuroticism)) %>% 
   aggregate_and_document_scale()
 data$bfas_opennessdomain <- data %>% 
-  dplyr::select(c(bfas_opennessdomain)) %>% 
+  dplyr::select(all_of(bfas_opennessdomain)) %>% 
   aggregate_and_document_scale()
 data$bfas_assertiveness <- data %>% 
-  dplyr::select(c(bfas_assertiveness)) %>% 
+  dplyr::select(all_of(bfas_assertiveness)) %>% 
   aggregate_and_document_scale()
 data$bfas_compassion <- data %>% 
-  dplyr::select(c(bfas_compassion)) %>% 
+  dplyr::select(all_of(bfas_compassion)) %>% 
   aggregate_and_document_scale()
 data$bfas_enthusiasm <- data %>% 
-  dplyr::select(c(bfas_enthusiasm)) %>% 
+  dplyr::select(all_of(bfas_enthusiasm)) %>% 
   aggregate_and_document_scale()
 data$bfas_industriousness <- data %>% 
-  dplyr::select(c(bfas_industriousness)) %>% 
+  dplyr::select(all_of(bfas_industriousness)) %>% 
   aggregate_and_document_scale()
 data$bfas_intellect <- data %>% 
-  dplyr::select(c(bfas_intellect)) %>% 
+  dplyr::select(all_of(bfas_intellect)) %>% 
   aggregate_and_document_scale()
 data$bfas_opennessaspect <- data %>% 
-  dplyr::select(c(bfas_opennessaspect)) %>% 
+  dplyr::select(all_of(bfas_opennessaspect)) %>% 
   aggregate_and_document_scale()
 data$bfas_orderliness <- data %>% 
-  dplyr::select(c(bfas_orderliness)) %>% 
+  dplyr::select(all_of(bfas_orderliness)) %>% 
   aggregate_and_document_scale()
 data$bfas_politeness <- data %>% 
-  dplyr::select(c(bfas_politeness)) %>% 
+  dplyr::select(all_of(bfas_politeness)) %>% 
   aggregate_and_document_scale()
 data$bfas_volatility <- data %>% 
-  dplyr::select(c(bfas_volatility)) %>% 
+  dplyr::select(all_of(bfas_volatility)) %>% 
   aggregate_and_document_scale()
 data$bfas_withdrawal <- data %>% 
-  dplyr::select(c(bfas_withdrawal)) %>% 
+  dplyr::select(all_of(bfas_withdrawal)) %>% 
   aggregate_and_document_scale()
 
 ## add variable label for aggregated variables 
@@ -454,7 +453,7 @@ rm(list = c("bfas_agreeableness", "bfas_assertiveness", "bfas_compassion",
             "bfas_opennessaspect", "bfas_opennessdomain", "bfas_orderliness",
             "bfas_politeness", "bfas_volatility", "bfas_withdrawal"))
 
-# >>> Dimensions of Identity Development Scale (Luyckx et al., 2008) ----
+# >> Dimensions of Identity Development Scale (Luyckx et al., 2008) ----
 ## create list of items for each variable 
 dids_commitmaking <- dict %>% 
   filter (scale == "DIDS Commitment Making") %>% 
@@ -474,19 +473,19 @@ dids_explorerum <- dict %>%
 
 ## create aggregated variables 
 data$dids_commitmaking <- data %>% 
-  dplyr::select(c(dids_commitmaking)) %>% 
+  dplyr::select(all_of(dids_commitmaking)) %>% 
   aggregate_and_document_scale()
 data$dids_commitid <- data %>% 
-  dplyr::select(c(dids_commitid)) %>% 
+  dplyr::select(all_of(dids_commitid)) %>% 
   aggregate_and_document_scale()
 data$dids_explorebreadth <- data %>% 
-  dplyr::select(c(dids_explorebreadth)) %>% 
+  dplyr::select(all_of(dids_explorebreadth)) %>% 
   aggregate_and_document_scale()
 data$dids_exploredepth <- data %>% 
-  dplyr::select(c(dids_exploredepth)) %>% 
+  dplyr::select(all_of(dids_exploredepth)) %>% 
   aggregate_and_document_scale()
 data$dids_explorerum <- data %>% 
-  dplyr::select(c(dids_explorerum)) %>% 
+  dplyr::select(all_of(dids_explorerum)) %>% 
   aggregate_and_document_scale()
 
 ## add variable label for aggregated variables 
@@ -498,7 +497,7 @@ var_label(data$dids_explorerum) <- "Ruminative Exploration 5 DIDS items aggregat
 
 rm(dids_commitmaking, dids_commitid, dids_explorebreadth, dids_exploredepth, dids_explorerum)
 
-# >>> Kessler Psychological Distress Scale (Kessler et al., 2002) ----
+# >> Kessler Psychological Distress Scale (Kessler et al., 2002) ----
 ## create list of items for each variable 
 k10_distress <- dict %>% 
   filter (scale == "K10 Psychological Distress") %>% 
@@ -506,7 +505,7 @@ k10_distress <- dict %>%
 
 ## create aggregated variables 
 data$k10_distress <- data %>% 
-  dplyr::select(c(k10_distress)) %>% 
+  dplyr::select(all_of(k10_distress)) %>% 
   aggregate_and_document_scale()
 
 ## add variable label for aggregated variables 
@@ -514,7 +513,7 @@ var_label(data$k10_distress) <- "Psychological Distress 10 K10 items aggregated 
 
 rm(k10_distress)
 
-# >> clean-up ----
+# > clean-up ----
 data <- data %>% 
   dplyr::select(ID, age, ethnic_cat, liveus, gender_f, gender_o, sexualo_o, schooling, socialclass, 
          usborn, usbornp, politics, religion, covidstress_1,
@@ -586,7 +585,7 @@ dist <- dist(identity.t)
 mds <- cmdscale(dist, eig = TRUE, k = 4)
 
 #plot of eigenvalues
-#elbow at 4 -> this value might change in actual data
+#elbow at 1 or 4
 eig <- mds$eig
 plot(eig, ylab = "eigenvalue")
 
