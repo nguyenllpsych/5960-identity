@@ -1,0 +1,34 @@
+TITLE: 
+    Measurement model;
+
+DATA: 
+    FILE IS Data MPLUS.csv;
+
+VARIABLE: 
+    NAMES ARE rse_1-rse_10
+              epsi_1-epsi_12
+              bfas_1-bfas_100
+              dids_1-dids_25
+              k10_1-k10_10;
+    USEVARIABLES = rse_1-rse_10
+                   dids_11-dids_25
+                   k10_1-k10_10;
+    MISSING ALL (-999);
+
+MODEL:
+    !measurement
+    breadth BY dids_11 dids_12 dids_13 dids_14 dids_15;
+    depth BY dids_16 dids_17 dids_18 dids_19 dids_20;
+    rumi BY dids_21 dids_22 dids_23 dids_24 dids_25;
+
+    esteem BY rse_1-rse_10;
+    distress BY k10_1-k10_10;
+
+    !!item error covariances
+    
+    
+    !!all factors covary
+
+OUTPUT:
+    SAMPSTAT STDYX MODINDICES(10);
+
